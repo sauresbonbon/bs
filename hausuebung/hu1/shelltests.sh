@@ -1,6 +1,3 @@
-Hier sind die Befehle mit kurzen, passenden Kommentaren (aus dem Kontext des Dokuments rekonstruiert), jeweils mit `#` davor:
-
-```
 # Test von cd (Wechsel in /tmp) und pwd (aktuelles Verzeichnis anzeigen)
 cd /tmp
 pwd
@@ -83,11 +80,40 @@ kill -9 xtermpid
 # Status nach Prozessbeendigung
 status
 
-# Sehr lange Pipe zur Belastungsprobe
+# Lange Pipe zur Belastungsprobe
 cat | cat | cat | cat | cat | cat | cat | cat | cat | rev
+
+# Danach müssen ein paar Eingaben gemacht werden!
+# bshell [/home/ar/bshell/src]> cat | cat | cat | cat | cat | cat | cat | cat | cat | rev
+# hallo
+# ollah
+#
+#
+
+# Anschließend: In einem neuen Terminal -> Killen eines Prozesses in der Mitte der Pipe. (Die Pid muss man sich mittel ps heraussuchen)
+
+kill -9 <pid_eines_prozesses>
+
+# Danach muss ein paar mal die Enter Taste gedrückt werden.
 
 # Status erneut prüfen
 status
-```
 
-Wenn du willst, kann ich dir das auch als fertiges `.sh`-Testskript oder strukturiert nach Aufgabenblöcken (z. B. „Teil a, b, c“) aufbereiten.
+# Die Ausgabe muss so aussehen (andere PIDS):
+#     PID     PGID     STATUS                 NAME
+# 3514981  3514972    exit(0)                  rev
+# 3514980  3514972    exit(0)                  cat
+# 3514979  3514972    exit(0)                  cat
+# 3514978  3514972    exit(0)                  cat
+# 3514977  3514972    exit(0)                  cat
+# 3514976  3514972  signal(9)                  cat
+# 3514975  3514972 signal(13)                  cat
+# 3514974  3514972 signal(13)                  cat
+# 3514973  3514972 signal(13)                  cat
+# 3514972  3514972 signal(13)                  cat
+
+
+# Wichtig ist hierbei, dass der Prozess, der das SIGKILL Signal bekommen hat, in der Liste mir signal(9) auftaucht,
+# alle Prozesse mit niedrigerer Pid müssen das signal(13) (SIGPIPE) aufzeigen und alle mit höherer mit den status exit(0)
+# Nur dann ist die Hausübung shell-advanced bestanden
+
