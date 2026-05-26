@@ -1,0 +1,1 @@
+statuslist.o: statuslist.c

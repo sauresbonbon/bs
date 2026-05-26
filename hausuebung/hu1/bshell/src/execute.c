@@ -108,10 +108,35 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
         /*
          * handle redirections here
          */
+
+        // Neu <, <<, >
         if (cmd_s->redirections != NULL){
-            printf("Handling of redirection is still missing ... implement it!\n");
-            exit(0);
+            List *r = cmd_s->redirections;
+            while (r != NULL) {
+                Redirection *redirection = (Redirection *)r->head;
+                int fd;
+
+
+                if (redirection->r_type == M_READ) {
+                    fd = open(redirection->u.r_file, O_RDONLY);
+                    dup2(fd, STDIN_FILENO);
+                    close(fd);
+                }
+                else if (redirection->r_type == M_WRITE) {
+                    fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                    dup2(fd, STDOUT_FILENO);
+                    close(fd);
+                }
+                else if (redirection->r_type == M_APPEND) {
+                    fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+                    dup2(fd, STDOUT_FILENO);
+                    close(fd);
+                }
+
+                r = r->tail;
+            }
         }
+
         if (execvp(command[0], command) == -1){
             fprintf(stderr, "-bshell: %s : command not found \n", command[0]);
             perror("");
@@ -150,12 +175,23 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
     if (cmd_s==NULL){
         return 0;
     }
-    if (strcmp(cmd_s->command_tokens[0],"exit")==0){
+
+    // Neu "cd" Builtin
+    if (strcmp(cmd_s->command_tokens[0],"cd")==0) {
+        if (strcmp(cmd_s->command_tokens[1], "~")) {
+        } else {
+            chdir(cmd_s->command_tokens[1]);
+        }
+    }
+
+
+     if (strcmp(cmd_s->command_tokens[0],"exit")==0){
         exit(0);
 
 /* do not modify this */
 #ifndef NOLIBREADLINE
-    } else if (strcmp(cmd_s->command_tokens[0],"hist")==0){
+    }
+    else if (strcmp(cmd_s->command_tokens[0],"hist")==0){
         return builtin_hist(cmd_s->command_tokens);
 #endif /* NOLIBREADLINE */
     } else {
@@ -163,6 +199,7 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
     }
     fprintf(stderr, "This should never happen!\n");
     exit(1);
+
 }
 
 /*
@@ -221,25 +258,42 @@ int execute(Command * cmd){
         fflush(stderr);
         break;
 
+            // Neu
     case C_OR:
+            lst = cmd->command_sequence->command_list;
+            while (lst != NULL) {
+                SimpleCommand *cmd_s = (SimpleCommand *)lst->head;
+                res = do_execute_simple(cmd_s, 0);
+                if (res == 0) {
+                    break;
+                }
+                lst = lst->tail;
+            }
+            break;
+
+            // Neu
     case C_AND:
+            lst = cmd->command_sequence->command_list;
+            while (lst != NULL) {
+                SimpleCommand *cmd_s = (SimpleCommand *)lst->head;
+                res = do_execute_simple(cmd_s, 0);
+                if (res != 0) {
+                    break;
+                }
+                lst = lst->tail;
+            }
+            break;
+
+            // Neu
     case C_SEQUENCE:
-        printf("[%s] AND, OR and SEQUENCES  are not yet implemented ... do it ... \n", __func__);
-        /** Iteration through the command list!
-         * lst = cmd->command_sequence->command_list;
-         * while (lst !=NULL){
-         *
-         *    ^^
-         *    ||
-         *    || code is missing here
-         *    ||
-         *    vv
-         *    
-         *    lst=lst->tail;
-         *
-         * }
-         */
+        lst = cmd->command_sequence->command_list;
+        while (lst != NULL) {
+            SimpleCommand *cmd_s = (SimpleCommand *)lst->head;
+            res = do_execute_simple(cmd_s, 0);
+            lst = lst->tail;
+        }
         break;
+
     case C_PIPE:
         printf("[%s] PIPES are not yet implemented ... do it ... \n", __func__);
         break;
