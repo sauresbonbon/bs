@@ -178,10 +178,19 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
 
     // Neu "cd" Builtin
     if (strcmp(cmd_s->command_tokens[0],"cd")==0) {
-        if (strcmp(cmd_s->command_tokens[1], "~")) {
-        } else {
+    char *path = cmd_s->command_tokens[1];
+        if (path == NULL || strcmp(path, "~") == 0) {
+            chdir(getenv("HOME"));
+            return 0;
+        } else if (chdir(cmd_s->command_tokens[1]) == -1 ) {
+            fprintf(stderr, "cd: %s: No such file or directory\n", cmd_s->command_tokens[1]);
+            return 1;
+        }
+
+        else {
             chdir(cmd_s->command_tokens[1]);
         }
+        return  0;
     }
 
 
