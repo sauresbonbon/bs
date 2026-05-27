@@ -116,21 +116,34 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
                 Redirection *redirection = (Redirection *)r->head;
                 int fd;
 
-
-                if (redirection->r_type == M_READ) {
-                    fd = open(redirection->u.r_file, O_RDONLY);
-                    dup2(fd, STDIN_FILENO);
-                    close(fd);
-                }
-                else if (redirection->r_type == M_WRITE) {
-                    fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-                    dup2(fd, STDOUT_FILENO);
-                    close(fd);
-                }
-                else if (redirection->r_type == M_APPEND) {
-                    fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-                    dup2(fd, STDOUT_FILENO);
-                    close(fd);
+                if (redirection->r_type == R_FILE) {
+                    if (redirection->r_mode == M_READ) {
+                        fd = open(redirection->u.r_file, O_RDONLY);
+                        if (fd < 0) {
+                            fprintf(stderr, "-bshell: %s: No such file or directory\n", redirection->u.r_file);
+                            exit(EXIT_FAILURE);
+                        }
+                        dup2(fd, STDIN_FILENO);
+                        close(fd);
+                    }
+                    else if (redirection->r_mode == M_WRITE) {
+                        fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                        if (fd < 0) {
+                            fprintf(stderr, "-bshell: cannot create %s\n", redirection->u.r_file);
+                            exit(EXIT_FAILURE);
+                        }
+                        dup2(fd, STDOUT_FILENO);
+                        close(fd);
+                    }
+                    else if (redirection->r_mode == M_APPEND) {
+                        fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+                        if (fd < 0) {
+                            fprintf(stderr, "-bshell: cannot append to %s\n", redirection->u.r_file);
+                            exit(EXIT_FAILURE);
+                        }
+                        dup2(fd, STDOUT_FILENO);
+                        close(fd);
+                    }
                 }
 
                 r = r->tail;
@@ -194,6 +207,12 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
 
 
      if (strcmp(cmd_s->command_tokens[0],"exit")==0){
+         char *exitcode = cmd_s->command_tokens[1];
+
+         if (exitcode != NULL) {
+             exit(atoi(exitcode));
+         }
+
         exit(0);
 
 /* do not modify this */
