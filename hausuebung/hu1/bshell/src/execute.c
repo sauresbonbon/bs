@@ -100,14 +100,13 @@ void unquote_command(Command *cmd){
 static int execute_fork(SimpleCommand *cmd_s, int background){
     char ** command = cmd_s->command_tokens;
     pid_t pid, wpid;
+    int status;
+
     pid = fork();
     if (pid==0){
         /* child */
         signal(SIGINT, SIG_DFL);
         signal(SIGTTOU, SIG_DFL);
-        /*
-         * handle redirections here
-         */
 
         // Neu <, <<, >
         if (cmd_s->redirections != NULL){
@@ -120,7 +119,11 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
                     if (redirection->r_mode == M_READ) {
                         fd = open(redirection->u.r_file, O_RDONLY);
                         if (fd < 0) {
-                            fprintf(stderr, "-bshell: %s: No such file or directory\n", redirection->u.r_file);
+                            if (errno == EACCES) {
+                                fprintf(stderr, "-bshell: %s: Permission denied\n", redirection->u.r_file);
+                            } else if (errno == ENOENT) {
+                                fprintf(stderr, "-bshell: %s: No such file or directory\n", redirection->u.r_file);
+                            }
                             exit(EXIT_FAILURE);
                         }
                         dup2(fd, STDIN_FILENO);
@@ -129,7 +132,11 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
                     else if (redirection->r_mode == M_WRITE) {
                         fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
                         if (fd < 0) {
-                            fprintf(stderr, "-bshell: cannot create %s\n", redirection->u.r_file);
+                            if (errno == EACCES) {
+                                fprintf(stderr, "-bshell: %s: Permission denied\n", redirection->u.r_file);
+                            } else if (errno == ENOENT) {
+                                fprintf(stderr, "-bshell: %s: No such file or directory\n", redirection->u.r_file);
+                            }
                             exit(EXIT_FAILURE);
                         }
                         dup2(fd, STDOUT_FILENO);
@@ -138,7 +145,11 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
                     else if (redirection->r_mode == M_APPEND) {
                         fd = open(redirection->u.r_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
                         if (fd < 0) {
-                            fprintf(stderr, "-bshell: cannot append to %s\n", redirection->u.r_file);
+                            if (errno == EACCES) {
+                                fprintf(stderr, "-bshell: %s: Permission denied\n", redirection->u.r_file);
+                            } else if (errno == ENOENT) {
+                                fprintf(stderr, "-bshell: %s: No such file or directory\n", redirection->u.r_file);
+                            }
                             exit(EXIT_FAILURE);
                         }
                         dup2(fd, STDOUT_FILENO);
@@ -171,11 +182,21 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
              * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
              */
 
-            wpid= waitpid(pid, NULL, 0);
+            wpid = waitpid(pid, &status, 0);
+            (void)wpid;
 
             //^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
             tcsetpgrp(fdtty, shell_pid);
+
+            if (WIFEXITED(status)) {
+                return WEXITSTATUS(status);
+            } else if (WIFSIGNALED(status)) {
+                return 1;
+            }
+            return 0;
+        } else {
+            fprintf(stderr, "%d %d\n", pid, pid);
             return 0;
         }
     }
@@ -198,7 +219,13 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
         }
 
         if (chdir(path) == -1) {
-            fprintf(stderr, "-bshell: cd: %s: No such file or directory\n", path);
+
+            if (errno == ENOENT) {
+                fprintf(stderr, "-bshell: cd: %s: No such file or directory\n", path);
+            }
+            else if (errno == EACCES) {
+                fprintf(stderr, "cd: %s: Permission denied\n", path);
+            }
             return 1;
         }
 
@@ -206,7 +233,7 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
     }
 
 
-     if (strcmp(cmd_s->command_tokens[0],"exit")==0){
+     else if (strcmp(cmd_s->command_tokens[0],"exit")==0){
          char *exitcode = cmd_s->command_tokens[1];
 
          if (exitcode != NULL) {
