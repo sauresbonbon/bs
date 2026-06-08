@@ -349,8 +349,115 @@ int execute(Command * cmd){
         break;
 
     case C_PIPE:
-        printf("[%s] PIPES are not yet implemented ... do it ... \n", __func__);
+        lst = cmd->command_sequence->command_list;
+
+        List *temp = lst;
+
+        // Speicher allokieren (Für PIDs und Pipes)
+        pid_t *pids = malloc(sizeof(pid_t) * cmd->command_sequence->command_list_len);
+        int (*pipes)[2] = malloc(sizeof(int[2]) * (cmd->command_sequence->command_list_len - 1));
+
+        // Erstellt pipes und prüft auf Fehler
+        for (int i = 0; i < cmd->command_sequence->command_list_len - 1; i++) {
+            if (pipe(pipes[i]) < 0) {
+                perror("pipe");
+                free(pids);
+                free(pipes);
+                return 1;
+            }
+        }
+
+
+        int i = 0;
+        while (temp != NULL) {
+            SimpleCommand *cmd_s = (SimpleCommand *)temp->head;
+
+            // Erstellt Kinderprozess
+            pids[i] = fork();
+
+            // Wenn < 0 Fehler
+            if (pids[i] < 0) {
+                perror("fork");
+                return 1;
+            }
+
+            // Child-Prozess
+            if (pids[i] == 0) {
+
+                // Umgang mit ctr+c usw.
+                signal(SIGINT, SIG_DFL);
+                signal(SIGTTOU, SIG_DFL);
+                signal(SIGCHLD, SIG_DFL);
+
+                // Alle Prozesse nach dem ersten sollen von der Pipe lesen
+                if (i > 0) {
+                    dup2(pipes[i - 1][0], STDIN_FILENO);
+                }
+
+                // Alle Prozesse bis auf dem letzten sollen auf die Pipe schreiben
+                if (i < cmd->command_sequence->command_list_len - 1) {
+                    dup2(pipes[i][1], STDOUT_FILENO);
+                }
+
+                // Die Pipes vom Child schließen, da sie ansonsten doppelt offen sind
+                // (duplikate in stdin/stdout bleiben offen)
+                for (int j = 0; j < cmd->command_sequence->command_list_len - 1; j++) {
+                    close(pipes[j][0]);
+                    close(pipes[j][1]);
+                }
+
+                char **command = cmd_s->command_tokens;
+
+                // Führt das Programm des Child-Prozesses aus und gibt ggf. Fehlermeldung zurück
+                if (execvp(command[0], command) == -1) {
+                    fprintf(stderr, "-bshell: %s : command not found \n", command[0]);
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            temp = temp->tail;
+            i++;
+        }
+
+        // Parent
+        for (int j = 0; j < cmd->command_sequence->command_list_len - 1; j++) {
+            close(pipes[j][0]);
+            close(pipes[j][1]);
+        }
+
+        if (execute_in_background == 0) {
+            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
+                setpgid(pids[j], pids[0]);
+            }
+            tcsetpgrp(fdtty, pids[0]);
+
+            int status;
+            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
+                int wpid = waitpid(pids[j], &status, 0);
+                (void)wpid;
+
+                if (j == cmd->command_sequence->command_list_len - 1) {
+                    if (WIFEXITED(status)) {
+                        res = WEXITSTATUS(status);
+                    } else if (WIFSIGNALED(status)) {
+                        res = 1;
+                    }
+                }
+            }
+
+            tcsetpgrp(fdtty, shell_pid);
+        } else {
+            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
+                setpgid(pids[j], pids[0]);
+            }
+            fprintf(stderr, "%d %d\n", pids[cmd->command_sequence->command_list_len - 1], pids[cmd->command_sequence->command_list_len - 1]);
+            res = 0;
+        }
+
+        free(pids);
+        free(pipes);
         break;
+
     default:
         printf("[%s] unhandled command type [%i]\n", __func__, cmd->command_type);
         break;
