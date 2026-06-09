@@ -1,0 +1,12 @@
+Identified Python 3.10.12 at /usr/bin/python3.10
+[Bootstrap] Identified pip 22.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10)' at /usr/bin/python3.10 -m pip
+[Bootstrap] python3 module 'pipenv' is missing.
+[Bootstrap] Attempting automated installation of the missing package.
+[Bootstrap] I want to run the command '/usr/bin/python3.10 -m pip install pipenv'.
+[Bootstrap] Do you want to run this command now? [yN]
+[Bootstrap] Running '/usr/bin/python3.10 -m pip install pipenv'
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pipenv in /usr/lib/python3/dist-packages (11.9.0)
+[Bootstrap] Automated python package installation successful.
+[Bootstrap] Even after an apparently successful pipenv installation the module could not be found.
+[Bootstrap] I'm giving up.
