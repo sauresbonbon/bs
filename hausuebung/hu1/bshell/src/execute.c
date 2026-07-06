@@ -189,6 +189,9 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
 
             tcsetpgrp(fdtty, shell_pid);
 
+            /* Add foreground process to list after it is already reaped */
+            statuslist_add_terminated(pid, pid, command[0], status);
+
             if (WIFEXITED(status)) {
                 return WEXITSTATUS(status);
             } else if (WIFSIGNALED(status)) {
@@ -196,7 +199,9 @@ static int execute_fork(SimpleCommand *cmd_s, int background){
             }
             return 0;
         } else {
-            fprintf(stderr, "%d %d\n", pid, pid);
+            /* background */
+            fprintf(stderr, "PID=%d PGID=%d\n", pid, pid);
+            statuslist_add(pid, pid, command[0]);
             return 0;
         }
     }
@@ -233,7 +238,11 @@ static int do_execute_simple(SimpleCommand *cmd_s, int background){
     }
 
 
-     else if (strcmp(cmd_s->command_tokens[0],"exit")==0){
+     else if (strcmp(cmd_s->command_tokens[0], "status") == 0) {
+        statuslist_print_and_cleanup();
+        return 0;
+
+    } else if (strcmp(cmd_s->command_tokens[0],"exit")==0){
          char *exitcode = cmd_s->command_tokens[1];
 
          if (exitcode != NULL) {
@@ -353,16 +362,19 @@ int execute(Command * cmd){
 
         List *temp = lst;
 
-        // Speicher allokieren (Für PIDs und Pipes)
-        pid_t *pids = malloc(sizeof(pid_t) * cmd->command_sequence->command_list_len);
-        int (*pipes)[2] = malloc(sizeof(int[2]) * (cmd->command_sequence->command_list_len - 1));
+        // Speicher allokieren (Für PIDs, Pipes und Prognamen)
+        int plen = cmd->command_sequence->command_list_len;
+        pid_t *pids = malloc(sizeof(pid_t) * plen);
+        int (*pipes)[2] = malloc(sizeof(int[2]) * (plen - 1));
+        char **progs = malloc(sizeof(char *) * plen);
 
         // Erstellt pipes und prüft auf Fehler
-        for (int i = 0; i < cmd->command_sequence->command_list_len - 1; i++) {
+        for (int i = 0; i < plen - 1; i++) {
             if (pipe(pipes[i]) < 0) {
                 perror("pipe");
                 free(pids);
                 free(pipes);
+                free(progs);
                 return 1;
             }
         }
@@ -384,6 +396,14 @@ int execute(Command * cmd){
             // Child-Prozess
             if (pids[i] == 0) {
 
+                /*
+                 * Prozessgruppe sofort selbst setzen: Kind kann schon vor dem
+                 * Elternprozess exec()en und von stdin lesen. Ohne dies race't
+                 * das Kind gegen das spätere setpgid()/tcsetpgrp() im Elternteil
+                 * und liest ggf. als Hintergrundprozess vom Terminal (-> EIO).
+                 */
+                setpgid(0, i == 0 ? 0 : pids[0]);
+
                 // Umgang mit ctr+c usw.
                 signal(SIGINT, SIG_DFL);
                 signal(SIGTTOU, SIG_DFL);
@@ -395,13 +415,13 @@ int execute(Command * cmd){
                 }
 
                 // Alle Prozesse bis auf dem letzten sollen auf die Pipe schreiben
-                if (i < cmd->command_sequence->command_list_len - 1) {
+                if (i < plen - 1) {
                     dup2(pipes[i][1], STDOUT_FILENO);
                 }
 
                 // Die Pipes vom Child schließen, da sie ansonsten doppelt offen sind
                 // (duplikate in stdin/stdout bleiben offen)
-                for (int j = 0; j < cmd->command_sequence->command_list_len - 1; j++) {
+                for (int j = 0; j < plen - 1; j++) {
                     close(pipes[j][0]);
                     close(pipes[j][1]);
                 }
@@ -415,28 +435,34 @@ int execute(Command * cmd){
                 }
             }
 
+            /* Prozessgruppe auch im Elternteil setzen (schließt die Race von beiden Seiten) */
+            setpgid(pids[i], pids[0]);
+            if (i == 0 && execute_in_background == 0) {
+                /* So früh wie möglich zur Vordergrundgruppe machen */
+                tcsetpgrp(fdtty, pids[0]);
+            }
+
+            /* Save prog name for statuslist */
+            progs[i] = cmd_s->command_tokens[0];
+
             temp = temp->tail;
             i++;
         }
 
         // Parent
-        for (int j = 0; j < cmd->command_sequence->command_list_len - 1; j++) {
+        for (int j = 0; j < plen - 1; j++) {
             close(pipes[j][0]);
             close(pipes[j][1]);
         }
 
         if (execute_in_background == 0) {
-            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
-                setpgid(pids[j], pids[0]);
-            }
-            tcsetpgrp(fdtty, pids[0]);
-
             int status;
-            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
+            for (int j = 0; j < plen; j++) {
                 int wpid = waitpid(pids[j], &status, 0);
                 (void)wpid;
+                statuslist_add_terminated(pids[j], pids[0], progs[j], status);
 
-                if (j == cmd->command_sequence->command_list_len - 1) {
+                if (j == plen - 1) {
                     if (WIFEXITED(status)) {
                         res = WEXITSTATUS(status);
                     } else if (WIFSIGNALED(status)) {
@@ -447,15 +473,16 @@ int execute(Command * cmd){
 
             tcsetpgrp(fdtty, shell_pid);
         } else {
-            for (int j = 0; j < cmd->command_sequence->command_list_len; j++) {
-                setpgid(pids[j], pids[0]);
+            for (int j = 0; j < plen; j++) {
+                statuslist_add(pids[j], pids[0], progs[j]);
             }
-            fprintf(stderr, "%d %d\n", pids[cmd->command_sequence->command_list_len - 1], pids[cmd->command_sequence->command_list_len - 1]);
+            fprintf(stderr, "PID=%d PGID=%d\n", pids[plen - 1], pids[0]);
             res = 0;
         }
 
         free(pids);
         free(pipes);
+        free(progs);
         break;
 
     default:

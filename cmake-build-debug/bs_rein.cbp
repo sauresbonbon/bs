@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="bs_rein"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bs_rein">
+				<Option output="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/bs_rein" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src"/>
+					<Add directory="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 bs_rein"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bs_rein/fast">
+				<Option output="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/bs_rein" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src"/>
+					<Add directory="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 bs_rein/fast"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/command.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/command.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/debug.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/execute.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/execute.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/helper.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/helper.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/list.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/list.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/readlineparsing.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/shell.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/shell.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/statuslist.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/statuslist.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/stringbuffer.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/stringbuffer.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/tokenparser.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/tokenparser.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/tokenscanner.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu1/bshell/src/types.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src/main.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src/output_utility.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src/output_utility.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src/vmm.c">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/hausuebung/hu2/memory/src/vmm.h">
+			<Option target="bs_rein"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/nitsc/Documents/Informatik/3.Semester/bs_rein/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

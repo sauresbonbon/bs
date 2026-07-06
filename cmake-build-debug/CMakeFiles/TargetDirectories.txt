@@ -1,0 +1,3 @@
+/home/liv/newBS/bs/cmake-build-debug/CMakeFiles/bs_rein.dir
+/home/liv/newBS/bs/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/liv/newBS/bs/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -48,6 +48,11 @@ extern char *yytext;
 
 
 
+static void sigchld_handler(int sig) {
+    (void)sig;
+    statuslist_update_all();
+}
+
 void disable_signal(int signo, int flags){
     struct sigaction siga;
     siga.sa_handler=SIG_IGN;
@@ -68,10 +73,17 @@ void disable_signals() {
 int main(int argc, char *argv[], char **envp) {
     char * line = NULL;
     disable_signals();
+
+    struct sigaction sa_chld;
+    sa_chld.sa_handler = sigchld_handler;
+    sa_chld.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+    sigemptyset(&sa_chld.sa_mask);
+    sigaction(SIGCHLD, &sa_chld, NULL);
+
     shell_pid = getpid();
     setpgid(0, shell_pid);
-    tcsetpgrp(fdtty, shell_pid);
     fdtty = open("/dev/tty", O_RDONLY|O_CLOEXEC);
+    tcsetpgrp(fdtty, shell_pid);
     int print_commands=0;
     if (argc > 1){
         print_commands = strcmp(argv[1], "--print-commands") ==0 ? 1: 0; 
